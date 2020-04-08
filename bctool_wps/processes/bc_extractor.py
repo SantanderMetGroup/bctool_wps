@@ -56,14 +56,16 @@ class BCExtractor(Process):
         LOGGER.info("Extract boundary conditions")
 
         bc_table = request.inputs['bc_table'][0].file
+        output_directory = self.workdir + "BCdata"
 
-        command = ["bctool/preprocessor.ESGF", "2033-12-24_00:00:00", "2033-12-30_00:00:00", "/oceano/gmeteo/WORK/ASNA/DATA/CanESM2", bc_table]
+        command = ["bctool/preprocessor.ESGF", "2033-12-24_00:00:00", "2033-12-30_00:00:00", "/oceano/gmeteo/WORK/ASNA/DATA/CanESM2", bc_table, output_directory]
         bc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outlog = bc.stdout.decode("utf-8")
         errlog = bc.stderr.decode("utf-8")
+
         
         try:
-            ml = MetaLink4('bc', workdir="grbData")
+            ml = MetaLink4('bc', workdir=output_directory)
             for f in os.listdir("/oceano/gmeteo/WORK/ASNA/projects/cordex4cds/v2/grbData"):
                 mf = MetaFile(os.path.basename(f), fmt=FORMATS.META4)
                 mf.file = os.path.join("/oceano/gmeteo/WORK/ASNA/projects/cordex4cds/v2/grbData", f)
