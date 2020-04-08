@@ -1,6 +1,6 @@
 name: bctool_wps
 channels:
-#- conda-forge
+- conda-forge
 - defaults
 dependencies:
 - pip
