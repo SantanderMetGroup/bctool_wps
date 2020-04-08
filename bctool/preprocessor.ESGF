@@ -340,8 +340,8 @@ function split_soil_mois_grb(){
 #+ MAIN
 #
 timemsg BEGIN
-use netcdf
-use cdo
+#use netcdf
+#use cdo
 
 read iyy imm trash <<< `echo $sformateddate | tr '_T:-' '    '`
 read fyy fmm trash <<< `echo $eformateddate | tr '_T:-' '    '`
