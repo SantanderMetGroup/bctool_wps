@@ -10,17 +10,21 @@ import subprocess
 # https://github.com/bird-house/flyingpigeon/blob/master/flyingpigeon/processes/wps_subset_countries.py
 from pywps.inout.outputs import MetaFile, MetaLink4
 
-metalink = ComplexOutput('metalink',
-                         'Metalink file with links to all BC outputs.',
-                         as_reference=True,
-                         supported_formats=[FORMATS.META4])
-outlog = LiteralOutput('stdout', 'stdout', data_type='string')
-errlog = LiteralOutput('stderr', 'stderr', data_type='string')
 
 class BCExtractor(Process):
     """BC WRF Extractor"""
     def __init__(self):
         inputs = [
+            LiteralInput('start_datetime',
+                         'Initial date to process as YYYY-MM-DD_HH:MM:SS',
+                         min_occurs=1,
+                         max_occurs=1,
+                         data_type='string'),
+            LiteralInput('end_datetime',
+                         'End date to process as YYYY-MM-DD_HH:MM:SS',
+                         min_occurs=1,
+                         max_occurs=1,
+                         data_type='string'),
             ComplexInput('bc_table', 'BC table',
                          abstract='BCtable',
                          min_occurs=1,
@@ -30,7 +34,13 @@ class BCExtractor(Process):
                          ]),
         ]
 
-        outputs = [metalink, outlog, errlog]
+        outputs = [
+             ComplexOutput('metalink',
+                           'Metalink file with links to all BC outputs.',
+                           as_reference=True,
+                           supported_formats=[FORMATS.META4]),
+             LiteralOutput('stdout', 'stdout', data_type='string'),
+             LiteralOutput('stderr', 'stderr', data_type='string')]
 
         super(BCExtractor, self).__init__(
             self._handler,
@@ -55,9 +65,11 @@ class BCExtractor(Process):
         LOGGER.info("Extract boundary conditions")
 
         bc_table = request.inputs['bc_table'][0].file
+        start_datetime = request.inputs['start_datetime'][0].data
+        end_datetime = request.inputs['end_datetime'][0].data
         output_directory = self.workdir
 
-        command = ["bctool/preprocessor.ESGF", "2033-12-24_00:00:00", "2033-12-30_00:00:00", "/oceano/gmeteo/WORK/ASNA/DATA/CanESM2", bc_table, output_directory]
+        command = ["bctool/preprocessor.ESGF", start_datetime, end_datetime, "/oceano/gmeteo/WORK/ASNA/DATA/CanESM2", bc_table, output_directory]
         bc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         outlog = bc.stdout.decode("utf-8")
         errlog = bc.stderr.decode("utf-8")

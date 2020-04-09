@@ -2,6 +2,7 @@
 #
 # Sample preprocessor in shell.
 
+# "2033-12-24_00:00:00", "2033-12-30_00:00:00"
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
 extdata_path=$3      # Path to the data
