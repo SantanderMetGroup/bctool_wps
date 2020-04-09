@@ -16,5 +16,6 @@ dependencies:
 - nbsphinx
 - nbval
 - nbconvert
+- cdo
 #- pip:
 #  - -e git+https://github.com/geopython/pywps@master#egg=pywps
