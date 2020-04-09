@@ -51,12 +51,11 @@ class BCExtractor(Process):
             status_supported=True
         )
 
-    @staticmethod
-    def _handler(request, response):
+    def _handler(self, request, response):
         LOGGER.info("Extract boundary conditions")
 
         bc_table = request.inputs['bc_table'][0].file
-        output_directory = self.workdir + "BCdata"
+        output_directory = self.workdir
 
         command = ["bctool/preprocessor.ESGF", "2033-12-24_00:00:00", "2033-12-30_00:00:00", "/oceano/gmeteo/WORK/ASNA/DATA/CanESM2", bc_table, output_directory]
         bc = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -66,9 +65,9 @@ class BCExtractor(Process):
         
         try:
             ml = MetaLink4('bc', workdir=output_directory)
-            for f in os.listdir("/oceano/gmeteo/WORK/ASNA/projects/cordex4cds/v2/grbData"):
+            for f in os.listdir(output_directory):
                 mf = MetaFile(os.path.basename(f), fmt=FORMATS.META4)
-                mf.file = os.path.join("/oceano/gmeteo/WORK/ASNA/projects/cordex4cds/v2/grbData", f)
+                mf.file = os.path.join(output_directory, f)
                 ml.append(mf)
         except Exception as ex:
             msg='BC failed: {}'.format(str(ex))
