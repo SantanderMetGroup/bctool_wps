@@ -1,4 +1,0 @@
-pywps
-jinja2
-click
-psutil
